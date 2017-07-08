@@ -1,0 +1,11 @@
+<div class="container">
+    <div class="col-sm-12">
+        <h2 class="text-center">Prijavljujem:</h2>
+    </div>
+    <div class="col-sm-4" *ngFor="let type of types">
+        <a href="#" class="btn btn-default btn-lg btn-block" style="margin-top:10px;white-space: normal;">
+            <span class="glyphicon {{type.glyphicon}}" style="padding-right:10px;"></span>
+            {{type.name}}
+        </a>
+    </div>
+</div>
