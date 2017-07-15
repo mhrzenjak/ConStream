@@ -1,4 +1,8 @@
 <div class="container">
+    <a [routerLink]="['']" class="btn btn-default btn-lg" style="margin-top:10px;white-space: normal;">
+            Povratak na izbor prijave
+    </a>
+
     <h2>{{programmeApplication.type.name}}</h2>
 
     <div class="progress progress-striped active">
@@ -131,7 +135,8 @@
                             <div class="radio" *ngIf="programmeApplication.type.id == 8">
                                 <label>
                                 <input type="radio" name="duration" required/>
-                                <input type="number" style="width:70px;" [(ngModel)]="programmeApplication.duration"/>
+                                <input type="number" style="width:70px;" name="duration" 
+                                    [(ngModel)]="programmeApplication.duration" #duration="ngModel" required pattern="[0-9]*"/>
                                 minuta
                             </label>
                             </div>
@@ -139,6 +144,12 @@
                         <div *ngIf="duration.errors && (duration.dirty || duration.touched)" class="alert alert-danger">
                             <div [hidden]="!duration.errors.required">
                                 Odaberite trajanje točke.
+                            </div>
+                            <div [hidden]="!durationInput.errors.required">
+                                Unesite trajanje točke.
+                            </div>
+                            <div [hidden]="!durationInput.hasError('pattern')">
+                                Unesena vrijednost nije ispravan broj.
                             </div>
                         </div>
                         <blockquote>
@@ -386,7 +397,7 @@
                 <button (click)="previousStage()" class="btn btn-default" *ngIf="stage > 1">&larr; Prethodno</button>
                 <button [disabled]="!applicationForm.form.valid || (!isPresenterListValid && isPresenterListTouched)" (click)="nextStage()"
                     class="btn btn-default" *ngIf="stage < maxStage">Nastavi &rarr;</button>
-                <button [disabled]="!applicationForm.form.valid || !isPresenterListValid" (click)="sendApplication()" class="btn btn-success"
+                <button [disabled]="!applicationForm.form.valid || !isPresenterListValid || isRequestSending" (click)="sendApplication()" class="btn btn-success"
                     *ngIf="stage == maxStage">Pošalji prijavu</button>
             </div>
         </div>

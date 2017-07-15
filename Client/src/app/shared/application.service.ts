@@ -1,4 +1,7 @@
 import { Injectable } from '@angular/core';
+import { Http } from "@angular/http";
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/of';
 
 import { ProgrammeApplicationCard } from "./programme-application-card.model";
 import { ProgrammeType } from "./programme-type.model";
@@ -12,16 +15,18 @@ export class ApplicationService {
         { id: 2, name: 'Panel', glyphicon: 'glyphicon-blackboard' },
         { id: 3, name: 'Okrugli stol', glyphicon: 'glyphicon-comment' },
         { id: 4, name: 'Predstavljanje knjige, časopisa, fanzina, stripa, igre i sl.', glyphicon: 'glyphicon-book' },
-        { id: 5, name: 'Radionicu', glyphicon: 'glyphicon-scissors' },
+        { id: 5, name: 'Radionica', glyphicon: 'glyphicon-scissors' },
         { id: 6, name: 'Kviz i sličan zabavni program', glyphicon: 'glyphicon-play' },
         { id: 7, name: 'Program igraonice', glyphicon: 'glyphicon-king' },
-        { id: 8, name: 'Filmsku projekciju, predstavu i sl.', glyphicon: 'glyphicon-film' },
+        { id: 8, name: 'Filmska projekcija, predstava i sl.', glyphicon: 'glyphicon-film' },
     ];
 
     applicationLocations: Array<ApplicationLocation> = [
         { id: 1, name: "Info pult" },
         { id: 2, name: "Štand udruge" }
     ];
+
+    constructor(private http: Http){};
 
     getApplicationTypes(): Array<ProgrammeType> {
 
@@ -41,5 +46,10 @@ export class ApplicationService {
     getApplicationLocation(id: number): ApplicationLocation {
 
         return this.applicationLocations.find(x => x.id == id);
+    }
+
+    postApplication(programmeApplication: ProgrammeApplicationCard): Observable<any>{
+        //return Observable.of(programmeApplication);
+        return this.http.post("/cgi-bin/MailService.php", programmeApplication);
     }
 }

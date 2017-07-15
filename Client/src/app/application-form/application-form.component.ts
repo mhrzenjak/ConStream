@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 
 import { ProgrammeApplicationCard } from "../shared/programme-application-card.model";
 import { ProgrammeType } from "../shared/programme-type.model";
@@ -21,7 +21,12 @@ export class ApplicationFormComponent {
     isPresenterListValid: boolean;
     isPresenterListTouched: boolean;
 
-	constructor(private route: ActivatedRoute, private applicationService: ApplicationService) { }
+    isRequestSending: boolean;
+
+	constructor(
+        private route: ActivatedRoute, 
+        private applicationService: ApplicationService,
+        private router: Router) { }
 
 	ngOnInit(): void {
 		this.programmeApplication = new ProgrammeApplicationCard();
@@ -38,6 +43,7 @@ export class ApplicationFormComponent {
         this.calculateProgress();
         this.isPresenterListValid = false;
         this.isPresenterListTouched = false;
+        this.isRequestSending = false;
 	}
 
     previousStage(): void{
@@ -72,6 +78,24 @@ export class ApplicationFormComponent {
 
     trackByFn(index: any, item: any) {
         return index;
+    }
+
+    sendApplication(): void{
+        this.isRequestSending = true;
+        this.programmeApplication.applicationLocation = this.applicationService.getApplicationLocation(this.programmeApplication.applicationLocation.id);
+        console.log(this.programmeApplication);
+        this.applicationService.postApplication(this.programmeApplication)
+        .subscribe(
+            value => { 
+                console.log(value);
+                this.router.navigate(['/ThankYou']);
+                this.isRequestSending = false;
+            },
+            error => {
+                console.log(error);
+                this.isRequestSending = false;
+            }
+        );
     }
 
     private calculateProgress(): void{
