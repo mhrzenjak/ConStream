@@ -1,0 +1,395 @@
+<div class="container">
+    <h2>{{programmeApplication.type.name}}</h2>
+
+    <div class="progress progress-striped active">
+        <div class="progress-bar" [style.width]="progress"></div>
+    </div>
+
+    <form #applicationForm="ngForm" name="applicationForm">
+        <div *ngIf="stage == 1">
+            <div class="col-md-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Naziv točke</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <input class="form-control" placeholder="Naziv točke" type="text" [(ngModel)]="programmeApplication.title" required name="title"
+                                #title="ngModel" />
+                        </div>
+                        <div *ngIf="title.errors && (title.dirty || title.touched)" class="alert alert-danger">
+                            <div [hidden]="!title.errors.required">
+                                Naziv točke je obavezno polje.
+                            </div>
+                        </div>
+                        <blockquote>
+                            <p>
+                                Ime koje odabrete ovdje bit će objavljeno na webu i u programskoj knjižici. (npr. Ruska distopija - između fikcije i stvarnosti)
+                            </p>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Opis točke</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <textarea class="form-control" rows="3" placeholder="Kratak opis točke" [(ngModel)]="programmeApplication.description" required
+                                name="description" #description="ngModel"></textarea>
+                        </div>
+                        <div *ngIf="description.errors && (description.dirty || description.touched)" class="alert alert-danger">
+                            <div [hidden]="!description.errors.required">
+                                Opis točke je obavezno polje.
+                            </div>
+                        </div>
+                        <blockquote>
+                            <p>
+                                Opis koji ste ovdje upisali će biti objavljen na webu i u programskoj knjižici. Ukoliko smisleno ne popunite ovu rubriku,
+                                prijavnica neće biti važeća i nećemo moći razmotriti Vašu prijavu.
+                            </p>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="stage == 2">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Popis i biografija predavača / voditelja</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group" *ngFor="let presenter of programmeApplication.presenters; let i = index; trackBy:trackByFn">
+                            <input class="form-control" style="width:50%" placeholder="Ime predavača / voditelja" type="text" (input)="programmeApplication.presenters[i]=$event.target.value;checkIfPresenterListIsValid()"
+                                [ngModel]="programmeApplication.presenters[i]" [ngModelOptions]="{standalone: true}" />
+                            <textarea class="form-control" placeholder="Kratka biografija predavača / voditelja" type="text" (input)="programmeApplication.presenterBiographies[i]=$event.target.value;checkIfPresenterListIsValid()"
+                                [ngModel]="programmeApplication.presenterBiographies[i]" [ngModelOptions]="{standalone: true}"></textarea>
+                        </div>
+
+                        <div *ngIf="!isPresenterListValid && isPresenterListTouched" class="alert alert-danger">
+                            <div>
+                                Obavezan je barem jedan predavač / voditelj i njegova biografija.
+                            </div>
+                        </div>
+
+                        <a class="btn btn-default" (click)="addPresenter()">Dodaj predavača / voditelja</a>
+                        <a class="btn btn-default" (click)="removePresenter()">Ukloni predavača / voditelja</a>
+
+                        <blockquote style="margin-top:10px;">
+                            <p>
+                                U 2-3 rečenice navedite par informacija o sebi - opis će biti objavljen na webu i u programskoj knjižici. Uključite linkove
+                                na web stranice ili blogove. (npr. X.Y. profesor je na slikarskom odjelu Škole primijenjene
+                                umjetnosti i dizajna u Zagrebu, a ilustracijom se profesionalno bavi već 10 godina.) Ako
+                                ne popunite ovu rubriku, prijavnica neće biti važeća i nećemo moći razmotriti Vašu prijavu.
+                            </p>
+                            <p *ngIf="programmeApplication.type.id == 2">
+                                Navedite sve paneliste.
+                            </p>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="stage == 3">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Trajanje točke</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <div class="radio">
+                                <label>
+                                <input [value]="30" [(ngModel)]="programmeApplication.duration" type="radio" name="duration" required #duration="ngModel"/>
+                                30 minuta
+                            </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                <input [value]="45" [(ngModel)]="programmeApplication.duration" type="radio" name="duration" required/>
+                                45 minuta
+                            </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                <input [value]="60" [(ngModel)]="programmeApplication.duration" type="radio" name="duration" required/>
+                                60 minuta
+                            </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                <input [value]="90" [(ngModel)]="programmeApplication.duration" type="radio" name="duration" required/>
+                                90 minuta
+                            </label>
+                            </div>
+                            <div class="radio" *ngIf="programmeApplication.type.id == 8">
+                                <label>
+                                <input type="radio" name="duration" required/>
+                                <input type="number" style="width:70px;" [(ngModel)]="programmeApplication.duration"/>
+                                minuta
+                            </label>
+                            </div>
+                        </div>
+                        <div *ngIf="duration.errors && (duration.dirty || duration.touched)" class="alert alert-danger">
+                            <div [hidden]="!duration.errors.required">
+                                Odaberite trajanje točke.
+                            </div>
+                        </div>
+                        <blockquote>
+                            <p>
+                                Okvirno trajanje točke s uključenim vremenom za pitanja i diskusiju.
+                            </p>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Nedostupnost</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <textarea class="form-control" placeholder="Odgovaraju mi sva vremena." type="text" name="unavailability" [(ngModel)]="programmeApplication.unavailability" 
+                            required #unavailability="ngModel"></textarea>
+                        </div>
+                        <div *ngIf="unavailability.errors && (unavailability.dirty || unavailability.touched)" class="alert alert-danger">
+                            <div [hidden]="!unavailability.errors.required">
+                                Nedostupnost je obavezno polje.
+                            </div>
+                        </div>
+                        <blockquote>
+                            <p>
+                                SFeraKon traje od petka od 19 sati do nedjelje do cca. 18 sati. Molimo Vas obavezno navedite točan dan i vrijeme kada zasigurno
+                                NE možete doći održati svoju točku programa, jer nismo u mogućnosti naknadno mijenjati program.
+                                Primjerice, ako niste iz Zagreba i ne možete fizički stići održati program u petak navečer.
+                            </p>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="stage == 4 && programmeApplication.type.id == 7">
+            <div class="col-md-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Broj potrebnih stolova</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <input class="form-control" placeholder="" type="text" name="numberOfTables" [(ngModel)]="programmeApplication.numberOfTables" required #numberOfTables="ngModel"/>
+                        </div>
+                        <div *ngIf="numberOfTables.errors && (numberOfTables.dirty || numberOfTables.touched)" class="alert alert-danger">
+                            <div [hidden]="!numberOfTables.errors.required">
+                                Broj potrebnih stolova je obavezno polje.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Predviđeni broj igrača</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <input class="form-control" type="text" placeholder="" name="numberOfPlayers" [(ngModel)]="programmeApplication.numberOfPlayers" required #numberOfPlayers="ngModel"/>
+                        </div>
+                        <div *ngIf="numberOfPlayers.errors && (numberOfPlayers.dirty || numberOfPlayers.touched)" class="alert alert-danger">
+                            <div [hidden]="!numberOfPlayers.errors.required">
+                                Predviđeni broj igrača je obavezno polje.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Mjesto prijave</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="radio">
+                            <label>
+                            <input [value]="1" [(ngModel)]="programmeApplication.applicationLocation.id" type="radio" name="applicationLocation" required #applicationLocation="ngModel"/>
+                            Info pult
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                            <input [value]="2" [(ngModel)]="programmeApplication.applicationLocation.id" type="radio" name="applicationLocation" required/>
+                            Vlastiti štand
+                            </label>
+                        </div>
+                        <div *ngIf="applicationLocation.errors && (applicationLocation.dirty || applicationLocation.touched)" class="alert alert-danger">
+                            <div [hidden]="!applicationLocation.errors.required">
+                                Odaberite mjesto prijave.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12" *ngIf="programmeApplication.applicationLocation.id == 2">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Naziv udruge</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <input class="form-control" type="text" placeholder="Naziv udruge" name="organizationName" [(ngModel)]="programmeApplication.organizationName" required #organizationName="ngModel"/>
+                        </div>
+                        <div *ngIf="organizationName.errors && (organizationName.dirty || organizationName.touched)" class="alert alert-danger">
+                            <div [hidden]="!organizationName.errors.required">
+                                Naziv udruge je obavezno polje.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="stage == 4 && programmeApplication.type.id == 6">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Mjesto prijave</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="radio">
+                            <label>
+                            <input [value]="1" [(ngModel)]="programmeApplication.applicationLocation.id" type="radio" name="applicationLocation" required #applicationLocation="ngModel"/>
+                            Info pult
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                            <input [value]="2" [(ngModel)]="programmeApplication.applicationLocation.id" type="radio" name="applicationLocation" required/>
+                            Vlastiti štand
+                            </label>
+                        </div>
+                        <div *ngIf="applicationLocation.errors && (applicationLocation.dirty || applicationLocation.touched)" class="alert alert-danger">
+                            <div [hidden]="!applicationLocation.errors.required">
+                                Odaberite mjesto prijave.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12" *ngIf="programmeApplication.applicationLocation.id == 2">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Naziv udruge</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <input class="form-control" type="text" placeholder="Naziv udruge" name="organizationName" [(ngModel)]="programmeApplication.organizationName" required #organizationName="ngModel"/>
+                        </div>
+                        <div *ngIf="organizationName.errors && (organizationName.dirty || organizationName.touched)" class="alert alert-danger">
+                            <div [hidden]="!organizationName.errors.required">
+                                Naziv udruge je obavezno polje.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="stage == maxStage">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Kontakt email adresa</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <input class="form-control" type="email" email placeholder="Kontakt email adresa" [(ngModel)]="programmeApplication.contactEmail"
+                            name="contactEmail" required #contactEmail="ngModel"/>
+                        </div>
+                        <div *ngIf="contactEmail.errors && (contactEmail.dirty || contactEmail.touched)" class="alert alert-danger">
+                            <div [hidden]="!contactEmail.errors.required">
+                                Kontakt email adresa je obavezno polje.
+                            </div>
+                            <div [hidden]="!contactEmail.hasError('email')">
+                                Unesena vrijednost nije validna email adresa.
+                            </div>
+                        </div>
+                        <blockquote>
+                            <p>
+                                Email adresa je isključivo za potrebe organizatora i neće biti objavljena.
+                            </p>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Kontakt broj telefona ili mobitela</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <input class="form-control" type="text" placeholder="Kontakt broj telefona ili mobitela" [(ngModel)]="programmeApplication.contactNumber"
+                            name="contactNumber" required #contactNumber="ngModel" pattern="[0-9 ]*"/>
+                        </div>
+                        <div *ngIf="contactNumber.errors && (contactNumber.dirty || contactNumber.touched)" class="alert alert-danger">
+                            <div [hidden]="!contactNumber.errors.required">
+                                Kontakt broj telefona je obavezno polje.
+                            </div>
+                            <div [hidden]="!contactNumber.hasError('pattern')">
+                                Unesena vrijednost nije ispravan telefonski broj.
+                            </div>
+                        </div>
+                        <blockquote>
+                            <p>
+                                Broj telefona je isključivo za potrebe organizatora i neće biti objavljen.
+                            </p>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Pitanja</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <textarea class="form-control" placeholder="" type="text" [(ngModel)]="programmeApplication.questions" name="questions"></textarea>
+                        </div>
+                        <blockquote>
+                            <p>
+                                Ukoliko imate pitanja vezana uz vašu točku programa ili generalno uz program SFeraKona, upišite ih ovdje i ona će biti proslijeđena
+                                uz vašu prijavu. Odgovore ćete dobiti na email adresu navedenu u prijavi.
+                            </p>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="padding-bottom:10px;">
+            <div class="col-md-offset-3 col-md-6 text-center">
+                <button (click)="previousStage()" class="btn btn-default" *ngIf="stage > 1">&larr; Prethodno</button>
+                <button [disabled]="!applicationForm.form.valid || (!isPresenterListValid && isPresenterListTouched)" (click)="nextStage()"
+                    class="btn btn-default" *ngIf="stage < maxStage">Nastavi &rarr;</button>
+                <button [disabled]="!applicationForm.form.valid || !isPresenterListValid" (click)="sendApplication()" class="btn btn-success"
+                    *ngIf="stage == maxStage">Pošalji prijavu</button>
+            </div>
+        </div>
+    </form>
+
+</div>
