@@ -44,8 +44,8 @@ if (!IsNullOrEmptyString($obj['numberOfPlayers'])) {
 if (!IsNullOrEmptyString($obj['numberOfTables'])) {
   $message .= "<tr><td style='border: 2px solid black'>Broj stolova</td><td style='border: 2px solid black'>{$obj['numberOfPlayers']}</td></tr>";
 }
-if (!IsNullOrEmptyString($obj['applicationLocation.name'])) {
-  $message .= "<tr><td style='border: 2px solid black'>Mjesto prijave</td><td style='border: 2px solid black'>{$obj['applicationLocation.name']}</td></tr>";
+if (!IsNullOrEmptyString($obj['applicationLocation']['name'])) {
+  $message .= "<tr><td style='border: 2px solid black'>Mjesto prijave</td><td style='border: 2px solid black'>{$obj['applicationLocation']['name']}</td></tr>";
 }
 if (!IsNullOrEmptyString($obj['organizationName'])) {
   $message .= "<tr><td style='border: 2px solid black'>Naziv udruge</td><td style='border: 2px solid black'>{$obj['organizationName']}</td></tr>";
