@@ -65,7 +65,42 @@ $message .= '
 </html>
 ';
 
+$servername = "localhost";
+$username = "*****";
+$password = "*****";
+$dbname = "*****";
 
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Escape user inputs for security
+$type = mysqli_real_escape_string($conn, $obj['type']['id']);
+$title = mysqli_real_escape_string($conn, $obj['title']);
+$description = mysqli_real_escape_string($conn, $obj['description']);
+$presenters = mysqli_real_escape_string($conn, implode("|", $obj['presenters']));
+$presenterBiographies = mysqli_real_escape_string($conn, implode("|", $obj['presenterBiographies']));
+$duration = mysqli_real_escape_string($conn, $obj['duration']);
+$contactEmail = mysqli_real_escape_string($conn, $obj['contactEmail']);
+$contactNumber = mysqli_real_escape_string($conn, $obj['contactNumber']);
+$unavailability = mysqli_real_escape_string($conn, $obj['unavailability']);
+$questions = mysqli_real_escape_string($conn, $obj['questions']);
+$numberOfTables = mysqli_real_escape_string($conn, $obj['numberOfTables']);
+$numberOfPlayers = mysqli_real_escape_string($conn, $obj['numberOfPlayers']);
+$applicationLocation = mysqli_real_escape_string($conn, $obj['applicationLocation']['id']);
+$organizationName = mysqli_real_escape_string($conn, $obj['organizationName']);
+$year = mysqli_real_escape_string($conn, "2018");
+
+// attempt insert query execution
+$sql = "INSERT INTO " .
+    "Applications (Type, Title, Description, Presenters, PresenterBiographies, Duration, ContactEmail, ContactNumber, Unavailability, ".
+      "Questions, NumberOfTables, NumberOfPlayers, ApplicationLocation, OrganizationName, Year) " . 
+    "VALUES ($type, '$title', '$description', '$presenters', '$presenterBiographies', $duration, '$contactEmail', '$contactNumber', '$unavailability'".
+      ", '$questions', $numberOfTables, $numberOfPlayers, $applicationLocation, '$organizationName', $year)";
+$result = $conn->query($sql);
 
 // Multiple recipients
 $to = 'mathrzenjak@hotmail.com,'.$obj['contactEmail']; // note the comma

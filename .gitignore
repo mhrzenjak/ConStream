@@ -23,6 +23,7 @@
 **npm-debug.log
 **testem.log
 **/typings
+**passes.txt
 
 # e2e
 **/e2e/*.js
